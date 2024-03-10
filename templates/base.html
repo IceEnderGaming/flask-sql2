@@ -14,7 +14,7 @@
     <nav class="navbar navbar-light bg-light">
         <p class="navbar-brand"><strong>Миссия Колонизация Марса</strong></p>
         {% if current_user.is_authenticated %}
-        <p class="navbar-brand"><strong>{{ current_user.name }} {{current_user.surname }}</strong></p>
+        <p class="navbar-brand"><strong>{{ current_user.name }} {{ current_user.surname }}</strong></p>
         <a class="navbar-brand" href="/logout">Выйти</a>
         {% else %}
         <p>
