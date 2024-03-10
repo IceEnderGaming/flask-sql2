@@ -26,6 +26,16 @@
             {% endif %}
         </tr>
     </table>
+    {% if current_user.is_authenticated and (current_user.id == item.team_leader or current_user.position == "captain") %}
+    <div>
+        <a href="/jobs/{{ item.user_id }}" class="btn btn-warning">
+            Изменить
+        </a>
+        <a href="/jobs_delete/{{ item.user_id }}" class="btn btn-danger">
+            Удалить
+        </a>
+    </div>
+    {% endif %}
 </div>
 {% endfor %}
 {% endblock %}

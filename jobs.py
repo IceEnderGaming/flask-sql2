@@ -2,7 +2,7 @@ from flask_login import LoginManager, login_user, login_required, logout_user, c
 from forms.login_form import LoginForm
 from forms.jobs_form import JobsForm
 from forms.register_form import RegisterForm
-from flask import Flask, render_template, redirect
+from flask import Flask, render_template, redirect, request, abort
 from data import db_session
 from data.users import User
 from data.jobs import Jobs
@@ -64,6 +64,40 @@ def login():
     return render_template('login.html', title='Авторизация', form=form)
 
 
+@app.route('/jobs/<int:id>', methods=['GET', 'POST'])
+@login_required
+def edit_jobs(id):
+    form = JobsForm()
+    if request.method == "GET":
+        db_sess = db_session.create_session()
+        jobs = db_sess.query(Jobs).filter(Jobs.user_id == id).first()
+        if jobs:
+            form.title.data = jobs.activity
+            form.leader_id.data = jobs.team_leader
+            form.work_size.data = jobs.work_size
+            form.collaborators.data = jobs.collaborators
+            form.is_finished.data = jobs.is_finished
+        else:
+            abort(404)
+    if form.validate_on_submit():
+        db_sess = db_session.create_session()
+        jobs = db_sess.query(Jobs).filter(Jobs.user_id == id).first()
+        if jobs:
+            jobs.activity = form.title.data
+            jobs.team_leader = form.leader_id.data
+            jobs.work_size = form.work_size.data
+            jobs.collaborators = form.collaborators.data
+            jobs.is_finished = form.is_finished.data
+            db_sess.commit()
+            return redirect('/')
+        else:
+            abort(404)
+    return render_template('add_job.html',
+                           title='Редактирование работы',
+                           form=form
+                           )
+
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegisterForm()
@@ -83,6 +117,20 @@ def register():
         db_sess.commit()
         return redirect('/login')
     return render_template('register.html', title='Регистрация', form=form)
+
+
+@app.route('/jobs_delete/<int:id>', methods=['GET', 'POST'])
+@login_required
+def news_delete(id):
+    db_session.global_init("db/users.db")
+    db_sess = db_session.create_session()
+    jobs = db_sess.query(Jobs).filter(Jobs.user_id == id).first()
+    if jobs:
+        db_sess.delete(jobs)
+        db_sess.commit()
+    else:
+        abort(404)
+    return redirect('/')
 
 
 @app.route('/logout')
