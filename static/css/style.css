@@ -1,0 +1,13 @@
+.table{
+    width: 600px;
+    margin: 0 auto;
+}
+tr{
+    background: lightgray;
+}
+td{
+    background-color: lightblue;
+}
+.finished{
+    background-color: pink;
+}
